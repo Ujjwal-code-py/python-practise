@@ -2,14 +2,10 @@ import pandas as pd
 import numpy as np
 from sklearn.impute import SimpleImputer
 import logging
-
-# Add these imports at the TOP of the file with other imports
 import requests
 import os
-import numpy as np
 from datetime import datetime
 from dotenv import load_dotenv
-import logging
 
 # Load environment variables
 load_dotenv()
@@ -455,16 +451,17 @@ def generate_ollama_insights(df, analysis, model_name="phi3:mini"):
         """
 
         # Create prompt for the model
-        prompt = f"""You are a data analyst assistant. Analyze this dataset and provide 5-7 concise, actionable insights.
+        prompt = f"""You are a data analyst assistant. Analyze this dataset and provide concise, actionable insights.
         Focus on patterns, relationships, and business implications. Keep it under 300 words.
 
         Dataset Information:
         {dataset_info}
 
         Key Insights:"""
+        url="http://localhost:11434/api/generate"
 
         response = requests.post(
-            "http://localhost:11434/api/generate",
+            url,
             json={
                 "model": model_name,      # <— dynamic model
                 "prompt": prompt,
