@@ -458,10 +458,9 @@ def generate_ollama_insights(df, analysis, model_name="phi3:mini"):
         {dataset_info}
 
         Key Insights:"""
-        url="http://localhost:11434/api/generate"
 
         response = requests.post(
-            url,
+            "http://localhost:11434/api/generate",
             json={
                 "model": model_name,      # <— dynamic model
                 "prompt": prompt,
@@ -519,7 +518,7 @@ def generate_local_insights(df, analysis):
     """Generate insights without API - always works"""
     insights = []
     
-    insights.append("## 🚀 AI-Powered Data Insights")
+    insights.append("## Data Insights")
     insights.append("")
     
     # Basic dataset info
