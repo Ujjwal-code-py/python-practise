@@ -339,9 +339,6 @@ div[data-baseweb="toggle"] div {
 
 """
 st.markdown(f"<style>{custom_css}</style>", unsafe_allow_html=True)
-
-
-# Page configuration
 st.set_page_config(
     page_title="Auto BI Dashboard",
     page_icon="📊",
@@ -362,7 +359,8 @@ def initialize_session_state():
         'dashboard_agg_func': "mean",
         'chart_types': {},
         'dashboard_components': [],
-        'current_dashboard': "Main Dashboard"
+        'current_dashboard': "Main Dashboard",
+        'current_page': 'upload'  # Make sure this line exists and has a value
     }
     
     for key, value in defaults.items():
