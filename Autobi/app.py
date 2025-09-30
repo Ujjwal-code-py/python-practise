@@ -958,7 +958,7 @@ def create_dashboard_chart(df, numeric_col, cat_col, key, chart_type, agg_func):
     chart_title = f"{agg_display} {numeric_col.replace('_', ' ').title()} by {cat_col.replace('_', ' ').title()}"
     
     # Create a clean header with proper spacing
-    header_col1, header_col2 = st.columns([3, 2])
+    header_col1, header_col2 = st.columns([2, 2])
     
     with header_col1:
         st.markdown(f"**{chart_title}**")
