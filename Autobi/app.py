@@ -18,328 +18,8 @@ from reportlab.lib.styles import getSampleStyleSheet
 from auto_bi_backend import *
 
 # ✅ Load custom CSS from external file
-custom_css="""
-/* ======================================================================
-   GLOBAL & BASE STYLES
-====================================================================== */
-
-.stApp {
-    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-}
-
-
-.card,
-.kpi-container,
-.report-section,
-.data-overview-box,
-.insight-card {
-    background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.1);
-}
-
-.data-overview-box {
-    padding: 1.5rem 2rem;
-    margin-top: 1rem;
-    margin-bottom: 1.5rem;
-    border-radius: 12px;
-    border: 1px solid #e3e8ee;
-    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.12);
-}
-
-.report-section,
-.insight-card {
-    border-left: 4px solid #3498db;
-    margin-bottom: 1rem;
-}
-
-.insight-point {
-    background: #f8f9fa;
-    padding: 0.8rem;
-    margin: 0.5rem 0;
-    border-radius: 4px;
-    border-left: 3px solid #27ae60;
-}
-
-.warning-point {
-    background: #fff3cd;
-    padding: 0.8rem;
-    margin: 0.5rem 0;
-    border-radius: 4px;
-    border-left: 3px solid #ffc107;
-}
-
-/* ======================================================================
-   TEXT & TYPOGRAPHY
-====================================================================== */
-
-.data-overview-title {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #2c3e50;
-    text-align: center;
-    margin-bottom: 1.2rem;
-}
-
-.report-header {
-    color: #2c3e50;
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.insight-card {
-    font-weight: 500;
-    font-size: 1.1rem;
-    color: #2c3e50;
-    line-height: 1.5;
-}
-
-/* Bigger metrics */
-.big-metric div[data-testid="stMetricValue"] {
-    font-size: 2rem !important;
-    font-weight: 700 !important;
-    color: #2980b9 !important;
-}
-
-.big-metric div[data-testid="stMetricLabel"] {
-    font-size: 1rem !important;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-}
-
-/* ======================================================================
-   METRICS & KPIs
-====================================================================== */
-
-.kpi-container {
-    text-align: center;
-    padding: 1.2rem;
-    margin-bottom: 1rem;
-    border: 1px solid #e3e8ee;
-}
-
-.kpi-value {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin: 0;
-    color: #2980b9;
-}
-
-.kpi-label {
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-    color: #7f8c8d;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    font-weight: 600;
-}
-
-/* ======================================================================
-   BUTTONS & CONTROLS
-====================================================================== */
-
-.stButton>button {
-    background-color: #2980b9;
-    color: white;
-    border-radius: 4px;
-    border: none;
-    padding: 0.5rem 1rem;
-    font-weight: 600;
-}
-
-.stButton>button:hover {
-    background-color: #2471a3;
-    color: white;
-}
-
-.chart-controls {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-    align-items: center;
-}
-
-.chart-control-button {
-    padding: 4px 8px !important;
-    font-size: 12px !important;
-    min-width: 40px !important;
-    height: 28px !important;
-}
-
-/* ======================================================================
-   AGGREGATION CONTROLS
-====================================================================== */
-
-.agg-control {
-    display: inline-flex;
-    align-items: center;
-    gap: 1px;
-    background: #f0f2f6;
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
-
-.agg-button {
-    padding: 2px 6px !important;
-    font-size: 11px !important;
-    min-width: 35px !important;
-    height: 24px !important;
-}
-
-.agg-button.active {
-    background-color: #2980b9 !important;
-    color: white !important;
-}
-
-/* ======================================================================
-   TOGGLES & RADIO
-====================================================================== */
-
-.stRadio > div {
-    flex-direction: row !important;
-    gap: 10px !important;
-}
-
-/* Toggle Switch */
-div[data-baseweb="toggle"] {
-    background-color: #3396D3;
-}
-
-div[data-baseweb="toggle"]:hover {
-    background-color: #2a7cb1;
-}
-
-div[data-baseweb="toggle"] div {
-    background-color: white;
-}
-
-.stToggle label {
-    color: white;
-    font-weight: 600;
-}
-
-.stToggle input:checked + div {
-    background-color: #3396D3;
-}
-
-/* ======================================================================
-   DASHBOARD BUILDER
-====================================================================== */
-
-.dashboard-component {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 15px;
-    margin: 10px 0;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.dashboard-component-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-/* ======================================================================
-   NEW CANVA-LIKE LAYOUT (ADDED)
-====================================================================== */
-
-/* Fixed-size dashboard canvas */
-.dashboard-canvas {
-    position: relative;
-    margin: 20px auto;
-    background: white;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    overflow: hidden;
-}
-
-/* Preset sizes */
-.canvas-a4 {
-    width: 794px;   /* A4 width at ~96 DPI */
-    height: 1123px; /* A4 height */
-}
-
-.canvas-slide {
-    width: 1280px;
-    height: 720px;
-}
-
-.canvas-custom {
-    width: var(--canvas-width, 1000px);
-    height: var(--canvas-height, 800px);
-}
-
-/* Dashboard items */
-.dashboard-item {
-    position: absolute;
-    background: #ffffff;
-    border: 1px solid #dcdcdc;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    padding: 10px;
-    cursor: move;
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.dashboard-item:hover {
-    border-color: #3498db;
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-}
-
-/* Resize handle */
-.dashboard-item::after {
-    content: "";
-    position: absolute;
-    right: 4px;
-    bottom: 4px;
-    width: 12px;
-    height: 12px;
-    background: #3498db;
-    border-radius: 2px;
-    cursor: se-resize;
-    opacity: 0.8;
-}
-
-/* Drag handle */
-.drag-handle {
-    width: 100%;
-    height: 20px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    cursor: grab;
-    background: linear-gradient(to right, #f8f9fa, #e9ecef);
-    border-bottom: 1px solid #e0e0e0;
-    border-radius: 6px 6px 0 0;
-}
-
-.drag-handle:active {
-    cursor: grabbing;
-}
-
-/* Export mode (clean download) */
-.export-mode .dashboard-canvas {
-    border: none;
-    box-shadow: none;
-}
-
-.export-mode .dashboard-item {
-    border: none;
-    box-shadow: none;
-}
-
-"""
-st.markdown(f"<style>{custom_css}</style>", unsafe_allow_html=True)
-
+with open("style.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Page configuration
 st.set_page_config(
@@ -640,10 +320,18 @@ def show_default_sidebar():
                 # Force rerun to update the UI
                 st.rerun()
     
-    # Rest of the function remains the same...
-    
     st.divider()
     
+    # ONLY ONE BACK BUTTON: Show it when user is in analysis mode
+    if st.session_state.file_uploaded and st.session_state.preprocessing_done:
+        if st.session_state.current_page == 'analysis':
+            if st.button("← Back to Data Processing", 
+                       key="single_back_button",
+                       use_container_width=True):
+                st.session_state.current_page = 'processing'
+                st.rerun()
+    
+    # Rest of the sidebar content for processed data
     if st.session_state.file_uploaded and st.session_state.preprocessing_done:
         st.markdown("### Processed Data")
         st.metric("Clean Rows", f"{len(st.session_state.processed_df):,}")
@@ -658,13 +346,18 @@ def show_default_sidebar():
                 st.write(f"Null values filled: {stats.get('null_values_filled', 'N/A')}")
                 st.write(f"Final rows: {stats.get('final_rows', 'N/A')}")
 
-        if st.button("🔄 Reset & Reprocess", use_container_width=True):
+        if st.button("🔄 Reset & Reprocess", 
+                   key="reset_reprocess_button",
+                   use_container_width=True):
             st.session_state.preprocessing_done = False
+            st.session_state.current_page = 'processing'
             st.rerun()
 
         st.markdown("---")
         st.markdown("### 💾 Export Options")
-        if st.button("📥 Download Processed Data", use_container_width=True):
+        if st.button("📥 Download Processed Data", 
+                   key="download_processed_data",
+                   use_container_width=True):
             csv = st.session_state.processed_df.to_csv(index=False)
             st.download_button(
                 label="Download CSV",
@@ -673,6 +366,22 @@ def show_default_sidebar():
                 mime="text/csv",
                 use_container_width=True
             )
+    
+    # NEW: Add Upload New Dataset button to default sidebar too
+    if st.session_state.file_uploaded:
+        st.markdown("---")
+        if st.button("📁 Upload New Dataset", 
+                   key="upload_new_dataset_from_default",
+                   use_container_width=True,
+                   help="Upload a different dataset"):
+            # Reset the application state to go back to upload page
+            st.session_state.file_uploaded = False
+            st.session_state.preprocessing_done = False
+            st.session_state.original_df = None
+            st.session_state.processed_df = None
+            st.session_state.current_page = 'upload'
+            st.session_state.dashboard_components = []  # Clear dashboard components
+            st.rerun()
     
     st.divider()
     st.header("📋 About")
@@ -691,7 +400,6 @@ def show_default_sidebar():
         st.write(f"**{comp_count} components ready:**")
         st.write(f"📊 {kpi_count} KPIs • 📈 {chart_count} Charts")
         st.write("Go to **Custom Dashboard** tab to build!")
-
 def show_custom_dashboard_sidebar():
     """Show a visually distinct sidebar ONLY for Custom Dashboard with better visibility"""
     
@@ -798,6 +506,21 @@ def show_custom_dashboard_sidebar():
             </ol>
         </div>
         """, unsafe_allow_html=True)
+        
+        # NEW: Add button to go back to upload page
+        st.markdown("---")
+        if st.button("📁 Upload New Dataset", 
+                   key="upload_new_dataset_from_custom",
+                   use_container_width=True,
+                   help="Go back to upload a new dataset"):
+            # Reset the application state to go back to upload page
+            st.session_state.file_uploaded = False
+            st.session_state.preprocessing_done = False
+            st.session_state.original_df = None
+            st.session_state.processed_df = None
+            st.session_state.current_page = 'upload'
+            st.session_state.dashboard_components = []  # Clear dashboard components
+            st.rerun()
 
 def display_custom_dashboard_components():
     """Display components in the custom dashboard sidebar with distinct styling"""
