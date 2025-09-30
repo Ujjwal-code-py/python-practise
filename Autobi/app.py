@@ -421,7 +421,7 @@ def show_data_preprocessing():
         remove_duplicates = st.checkbox(
             "🔄 Remove Duplicate Rows",
             help="Remove identical rows from your dataset",
-            value=True
+            value=False
         )
 
     custom_fill_values = {}
@@ -438,7 +438,7 @@ def show_data_preprocessing():
                 "Custom Fill Values"
             ],
             help="Choose how to handle missing values",
-            index=1
+            index=0
         )
 
         if null_handling == "Custom Fill Values":
@@ -869,12 +869,10 @@ def create_dashboard_tab(df, analysis):
     
     create_smart_kpis(df, analysis, st.session_state.dashboard_agg_func)
     
-    # In create_dashboard_tab function, ensure the header shows current aggregation:
-
+    # Aggregation header
     col1, col2 = st.columns([2, 1], vertical_alignment="center")
 
     with col1:
-        # Dynamic header that changes with aggregation
         current_agg = st.session_state.dashboard_agg_func
         if current_agg == "mean":
             agg_text = "Average"
@@ -888,7 +886,6 @@ def create_dashboard_tab(df, analysis):
         st.markdown(f"### 📊 Key Relationships ({agg_text})")
 
     with col2:
-        # Your existing aggregation buttons
         agg_options = ["Avg", "Sum"]
         agg_mapping = {"Avg": "mean", "Sum": "sum"}
         current_display = "Avg" if st.session_state.dashboard_agg_func == "mean" else "Sum"
@@ -908,77 +905,37 @@ def create_dashboard_tab(df, analysis):
             st.session_state.dashboard_agg_func = new_agg_func
             st.rerun()
 
-    st.divider()
 
     if analysis['numeric_cols'] and analysis['suitable_for_grouping']:
         insights_created = 0
+        cols = st.columns(2)  # Create two columns for the charts
+        
         for i, num_col in enumerate(analysis['numeric_cols'][:2]):
             for j, cat_col in enumerate(analysis['suitable_for_grouping'][:2]):
-                if insights_created % 2 == 0:
-                    c1, c2 = st.columns(2)
-                
-                with c1 if insights_created % 2 == 0 else c2:
+                with cols[insights_created % 2]:  # Alternate between columns
                     chart_key = f"dashboard_{num_col}_{cat_col}"
                     
                     if chart_key not in st.session_state.chart_types:
                         st.session_state.chart_types[chart_key] = "Bar Chart"
                     
-                    chart_title = f"{num_col.replace('_', ' ').title()} by {cat_col.replace('_', ' ').title()}"
-                    
-                    header_col1, header_col2 = st.columns([4, 2])
-                    
-                    # with header_col1:
-                    #     st.markdown(f'**{chart_title}**')
-                    
-                    # Inside create_dashboard_tab function, find the chart type buttons and replace with:
-
-                    # Inside create_dashboard_tab function, replace the chart type buttons with:
-
-                    with header_col2:
-                        btn_col1, btn_col2, btn_col3 = st.columns(3)
-
-                        with btn_col1:
-                            # Bar chart button - NO PLUS SIGN
-                            is_active = st.session_state.chart_types[chart_key] == "Bar Chart"
-                            if st.button("📊", key=f"{chart_key}_bar", 
-                                       help="Bar chart",
-                                       use_container_width=True,
-                                       type="primary" if is_active else "secondary"):
-                                st.session_state.chart_types[chart_key] = "Bar Chart"
-                                st.rerun()
-
-                        with btn_col2:
-                            # Pie chart button - NO PLUS SIGN
-                            is_active = st.session_state.chart_types[chart_key] == "Pie Chart"
-                            if st.button("🥧", key=f"{chart_key}_pie", 
-                                       help="Pie chart",
-                                       use_container_width=True,
-                                       type="primary" if is_active else "secondary"):
-                                st.session_state.chart_types[chart_key] = "Pie Chart"
-                                st.rerun()
-
-                        with btn_col3:
-                            # Line chart button - NO PLUS SIGN
-                            is_active = st.session_state.chart_types[chart_key] == "Line Chart"
-                            if st.button("📈", key=f"{chart_key}_line", 
-                                       help="Line chart",
-                                       use_container_width=True,
-                                       type="primary" if is_active else "secondary"):
-                                st.session_state.chart_types[chart_key] = "Line Chart"
-                                st.rerun()
-
-                    create_dashboard_chart(
-                        df, 
-                        num_col, 
-                        cat_col, 
-                        chart_key,
-                        st.session_state.chart_types[chart_key],
-                        st.session_state.dashboard_agg_func
-                    )
+                    # Create container for each chart with proper spacing
+                    with st.container():
+                        st.markdown("---")  # Separator between charts
+                        create_dashboard_chart(
+                            df, 
+                            num_col, 
+                            cat_col, 
+                            chart_key,
+                            st.session_state.chart_types[chart_key],
+                            st.session_state.dashboard_agg_func
+                        )
+                        st.markdown("")  # Add some space below chart
                 
                 insights_created += 1
-                if insights_created >= 4:
+                if insights_created >= 4:  # Limit to 4 charts (2 per column)
                     break
+            if insights_created >= 4:
+                break
     else:
         st.warning("⚠️ Need both numeric and categorical columns for relationship charts")
 
@@ -1000,32 +957,62 @@ def create_dashboard_chart(df, numeric_col, cat_col, key, chart_type, agg_func):
         
     chart_title = f"{agg_display} {numeric_col.replace('_', ' ').title()} by {cat_col.replace('_', ' ').title()}"
     
-    # Create header with toggle button
-    header_col1, header_col2, header_col3 = st.columns([4, 1, 1])
+    # Create a clean header with proper spacing
+    header_col1, header_col2 = st.columns([3, 1])
     
     with header_col1:
-        st.markdown(f'**{chart_title}**')
+        st.markdown(f"**{chart_title}**")
     
-    with header_col3:
-        component_data = {
-            'chart_type': chart_type,
-            'numeric_col': numeric_col,
-            'cat_col': cat_col,
-            'agg_func': current_agg_func,  # Use current aggregation
-            'title': chart_title
-        }
-        is_added = get_component_status('chart', component_data)
+    with header_col2:
+        # Chart type buttons in a compact row
+        btn_col1, btn_col2, btn_col3, btn_col4 = st.columns(4)
         
-        button_text = "－" if is_added else "＋"
-        button_help = "Remove from dashboard" if is_added else "Add to dashboard"
+        with btn_col1:
+            is_active = st.session_state.chart_types[key] == "Bar Chart"
+            if st.button("📊", key=f"{key}_bar", 
+                       help="Bar chart",
+                       use_container_width=True,
+                       type="primary" if is_active else "secondary"):
+                st.session_state.chart_types[key] = "Bar Chart"
+                st.rerun()
+
+        with btn_col2:
+            is_active = st.session_state.chart_types[key] == "Pie Chart"
+            if st.button("🥧", key=f"{key}_pie", 
+                       help="Pie chart",
+                       use_container_width=True,
+                       type="primary" if is_active else "secondary"):
+                st.session_state.chart_types[key] = "Pie Chart"
+                st.rerun()
+
+        with btn_col3:
+            is_active = st.session_state.chart_types[key] == "Line Chart"
+            if st.button("📈", key=f"{key}_line", 
+                       help="Line chart",
+                       use_container_width=True,
+                       type="primary" if is_active else "secondary"):
+                st.session_state.chart_types[key] = "Line Chart"
+                st.rerun()
         
-        button_key = f"toggle_chart_{key}"
-        if st.button(button_text, 
-                    key=button_key, 
-                    help=button_help,
-                    use_container_width=True):
-            success, action = add_component_to_dashboard_handler('chart', component_data, chart_title)
-            st.rerun()
+        with btn_col4:
+            component_data = {
+                'chart_type': chart_type,
+                'numeric_col': numeric_col,
+                'cat_col': cat_col,
+                'agg_func': current_agg_func,
+                'title': chart_title
+            }
+            is_added = get_component_status('chart', component_data)
+            
+            button_text = "－" if is_added else "＋"
+            button_help = "Remove from dashboard" if is_added else "Add to dashboard"
+            
+            if st.button(button_text, 
+                        key=f"toggle_{key}", 
+                        help=button_help,
+                        use_container_width=True):
+                success, action = add_component_to_dashboard_handler('chart', component_data, chart_title)
+                st.rerun()
     
     # Create the actual chart with current aggregation
     if chart_type == "Bar Chart":
@@ -1036,12 +1023,6 @@ def create_dashboard_chart(df, numeric_col, cat_col, key, chart_type, agg_func):
         create_dashboard_line_chart(df, numeric_col, cat_col, current_agg_func, key, chart_title)
 def create_dashboard_bar_chart(df, numeric_col, cat_col, agg_func, key, chart_title=None):
     """Create bar chart with dynamic aggregation"""
-    if chart_title is None:
-        # Use session state aggregation
-        current_agg_func = st.session_state.dashboard_agg_func
-        agg_display = "Average" if current_agg_func == "mean" else "Total" if current_agg_func == "sum" else current_agg_func.title()
-        chart_title = f"{agg_display} {numeric_col.replace('_', ' ').title()} by {cat_col.replace('_', ' ').title()}"
-    
     # Use session state aggregation function
     current_agg_func = st.session_state.dashboard_agg_func
     
@@ -1052,7 +1033,7 @@ def create_dashboard_bar_chart(df, numeric_col, cat_col, agg_func, key, chart_ti
     elif current_agg_func == "count":
         grouped = df.groupby(cat_col)[numeric_col].count().reset_index()
     else:
-        grouped = df.groupby(cat_col)[numeric_col].mean().reset_index()  # Default to mean
+        grouped = df.groupby(cat_col)[numeric_col].mean().reset_index()
     
     grouped.columns = [cat_col, numeric_col]
     grouped = grouped.nlargest(10, numeric_col)
@@ -1063,16 +1044,22 @@ def create_dashboard_bar_chart(df, numeric_col, cat_col, agg_func, key, chart_ti
                 color=numeric_col,
                 color_continuous_scale='viridis')
     
-    fig.update_layout(height=400, showlegend=False, margin=dict(t=10))
+    # Remove internal title and adjust layout
+    fig.update_layout(
+        height=350,  # Slightly reduced height
+        showlegend=False, 
+        margin=dict(t=20, b=40, l=40, r=20),  # Better margins
+        
+    )
+    
+    # Improve axis labels
+    fig.update_xaxes(title_text=cat_col.replace('_', ' ').title())
+    fig.update_yaxes(title_text=numeric_col.replace('_', ' ').title())
+    
     st.plotly_chart(fig, use_container_width=True, key=key)
 
 def create_dashboard_pie_chart(df, numeric_col, cat_col, agg_func, key, chart_title=None):
     """Create pie chart with dynamic aggregation"""
-    if chart_title is None:
-        current_agg_func = st.session_state.dashboard_agg_func
-        agg_display = "Average" if current_agg_func == "mean" else "Total" if current_agg_func == "sum" else current_agg_func.title()
-        chart_title = f"{agg_display} {numeric_col.replace('_', ' ').title()} by {cat_col.replace('_', ' ').title()}"
-    
     current_agg_func = st.session_state.dashboard_agg_func
     
     if current_agg_func == "mean":
@@ -1084,19 +1071,17 @@ def create_dashboard_pie_chart(df, numeric_col, cat_col, agg_func, key, chart_ti
     else:
         grouped = df.groupby(cat_col)[numeric_col].mean().reset_index()
     
-    grouped = grouped.nlargest(10, numeric_col)
+    grouped = grouped.nlargest(8, numeric_col)  # Limit to 8 for better pie chart
     
     fig = px.pie(grouped, values=numeric_col, names=cat_col)
-    fig.update_layout(height=400, margin=dict(t=10))
+    fig.update_layout(
+        height=350,
+        margin=dict(t=20, b=20, l=20, r=20),
+    )
     st.plotly_chart(fig, use_container_width=True, key=key)
 
 def create_dashboard_line_chart(df, numeric_col, cat_col, agg_func, key, chart_title=None):
     """Create line chart with dynamic aggregation"""
-    if chart_title is None:
-        current_agg_func = st.session_state.dashboard_agg_func
-        agg_display = "Average" if current_agg_func == "mean" else "Total" if current_agg_func == "sum" else current_agg_func.title()
-        chart_title = f"{agg_display} {numeric_col.replace('_', ' ').title()} by {cat_col.replace('_', ' ').title()}"
-    
     current_agg_func = st.session_state.dashboard_agg_func
     
     if current_agg_func == "mean":
@@ -1111,9 +1096,16 @@ def create_dashboard_line_chart(df, numeric_col, cat_col, agg_func, key, chart_t
     grouped = grouped.nlargest(10, numeric_col)
     
     fig = px.line(grouped, x=cat_col, y=numeric_col)
-    fig.update_layout(height=400, margin=dict(t=10))
+    fig.update_layout(
+        height=350,
+        margin=dict(t=20, b=40, l=40, r=20),
+    )
+    
+    # Improve axis labels
+    fig.update_xaxes(title_text=cat_col.replace('_', ' ').title())
+    fig.update_yaxes(title_text=numeric_col.replace('_', ' ').title())
+    
     st.plotly_chart(fig, use_container_width=True, key=key)
-
 def create_custom_analysis_tab(df, analysis):
     """Create custom analysis tab"""
    
