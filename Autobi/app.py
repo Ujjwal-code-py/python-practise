@@ -925,7 +925,7 @@ def create_dashboard_tab(df, analysis):
                     
                     chart_title = f"{num_col.replace('_', ' ').title()} by {cat_col.replace('_', ' ').title()}"
                     
-                    header_col1, header_col2 = st.columns([3, 1])
+                    header_col1, header_col2 = st.columns([4, 1])
                     
                     # with header_col1:
                     #     st.markdown(f'**{chart_title}**')
