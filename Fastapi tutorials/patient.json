@@ -1,0 +1,12 @@
+{
+  "P001": { "name": "Ananya Sharma", "age": 24, "gender": "Female", "city": "Delhi" },
+  "P002": { "name": "Rohit Verma", "age": 28, "gender": "Male", "city": "Mumbai" },
+  "P003": { "name": "Neha Singh", "age": 26, "gender": "Female", "city": "Pune" },
+  "P004": { "name": "Amit Patel", "age": 32, "gender": "Male", "city": "Ahmedabad" },
+  "P005": { "name": "Priya Mehta", "age": 23, "gender": "Female", "city": "Bengaluru" },
+  "P006": { "name": "Kunal Rao", "age": 30, "gender": "Male", "city": "Hyderabad" },
+  "P007": { "name": "Sneha Iyer", "age": 27, "gender": "Female", "city": "Chennai" },
+  "P008": { "name": "Rahul Nair", "age": 35, "gender": "Male", "city": "Kochi" },
+  "P009": { "name": "Pooja Kulkarni", "age": 29, "gender": "Female", "city": "Nagpur" },
+  "P010": { "name": "Vikas Joshi", "age": 31, "gender": "Male", "city": "Jaipur" }
+}
